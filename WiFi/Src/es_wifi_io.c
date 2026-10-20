@@ -98,16 +98,13 @@ void SPI_WIFI_MspInit(SPI_HandleTypeDef *hspi) {
   HAL_GPIO_Init(ISM43362_WAKEUP_GPIO_Port, &GPIO_Init);
 
   /* configure Data ready pin */
-  HAL_GPIO_WritePin(ISM43362_DRDY_EXTI1_GPIO_Port, ISM43362_DRDY_EXTI1_Pin,
-                    GPIO_PIN_RESET);
   GPIO_Init.Pin = ISM43362_DRDY_EXTI1_Pin;
   GPIO_Init.Mode = GPIO_MODE_IT_RISING;
   GPIO_Init.Pull = GPIO_NOPULL;
-  GPIO_Init.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(ISM43362_DRDY_EXTI1_GPIO_Port, &GPIO_Init);
 
   /* configure Reset pin */
-  HAL_GPIO_WritePin(ISM43362_RST_GPIO_Port, ISM43362_RST_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(ISM43362_RST_GPIO_Port, ISM43362_RST_Pin, GPIO_PIN_RESET);
   GPIO_Init.Pin = ISM43362_RST_Pin;
   GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_Init.Pull = GPIO_NOPULL;
@@ -120,7 +117,7 @@ void SPI_WIFI_MspInit(SPI_HandleTypeDef *hspi) {
   GPIO_Init.Pin = ISM43362_SPI3_CSN_Pin;
   GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_Init.Pull = GPIO_NOPULL;
-  GPIO_Init.Speed = GPIO_SPEED_FREQ_MEDIUM;
+  GPIO_Init.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(ISM43362_SPI3_CSN_GPIO_Port, &GPIO_Init);
 
   /* configure SPI CLK pin */
@@ -142,7 +139,7 @@ void SPI_WIFI_MspInit(SPI_HandleTypeDef *hspi) {
   /* configure SPI MISO pin */
   GPIO_Init.Pin = INTERNAL_SPI3_MISO_Pin;
   GPIO_Init.Mode = GPIO_MODE_AF_PP;
-  GPIO_Init.Pull = GPIO_PULLUP;
+  GPIO_Init.Pull = GPIO_NOPULL;
   GPIO_Init.Speed = GPIO_SPEED_FREQ_MEDIUM;
   GPIO_Init.Alternate = GPIO_AF6_SPI3;
   HAL_GPIO_Init(INTERNAL_SPI3_MISO_GPIO_Port, &GPIO_Init);
@@ -172,7 +169,7 @@ int8_t SPI_WIFI_Init(uint16_t mode) {
     hspi.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-    hspi.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
+    hspi.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
 
     if (HAL_SPI_Init(&hspi) != HAL_OK) {
       return -1;

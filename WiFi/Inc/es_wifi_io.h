@@ -51,6 +51,15 @@ extern "C" {
 #define WIFI_IS_CMDDATA_READY()                                                \
   (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_1) == GPIO_PIN_SET)
 
+/* Exported Defines ---------------------------------------------------------*/
+#define WIFI_TX_PADDING 0x0A
+#define WIFI_RX_PADDING 0x15
+#define WIFI_MSG_POWERUP "\r\n> "
+#define WIFI_MSG_OK "\r\n\r\nOK\r\n> "
+#define WIFI_MSG_START "\r\n[SOMA]"
+#define WIFI_MSG_END "[EOMA]\r\nOK\r\n>"
+#define WIFI_MSG_EMPTY "\r\n[SOMA][EOMA]\r\nOK\r\n> "
+
 /* Exported Variables --------------------------------------------------------*/
 extern SPI_HandleTypeDef hspi;
 
