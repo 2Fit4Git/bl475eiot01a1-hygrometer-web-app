@@ -88,7 +88,7 @@ void MX_GPIO_Init(void) {
                     GPIO_PIN_RESET);
 
   /* Configure Bluetooth SPBTLE_RF GPIO Pins ------------------------------- */
-  HAL_GPIO_WritePin(SPBTLE_RF_RST_GPIO_Port, SPBTLE_RF_RST_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(SPBTLE_RF_RST_GPIO_Port, SPBTLE_RF_RST_Pin, GPIO_PIN_RESET);
   GPIO_InitStruct.Pin = SPBTLE_RF_RST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -105,8 +105,7 @@ void MX_GPIO_Init(void) {
 
   GPIO_InitStruct.Pin = SPBTLE_RF_IRQ_EXTI6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(SPBTLE_RF_IRQ_EXTI6_GPIO_Port, &GPIO_InitStruct);
   /* ----------------------------------------------------------------------- */
 
@@ -130,7 +129,6 @@ void MX_GPIO_Init(void) {
   GPIO_InitStruct.Pin = SPSGRF_915_GPIO3_EXTI5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPSGRF_915_GPIO3_EXTI5_GPIO_Port, &GPIO_InitStruct);
   /* ----------------------------------------------------------------------- */
 
@@ -138,15 +136,13 @@ void MX_GPIO_Init(void) {
   GPIO_InitStruct.Pin = USB_OTG_FS_OVRCR_EXTI3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-//   /* Configure GPIO pin : BUTTON_EXTI13_Pin */
-//   GPIO_InitStruct.Pin = BUTTON_EXTI13_Pin;
-//   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-//   GPIO_InitStruct.Pull = GPIO_NOPULL;
-//   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-//   HAL_GPIO_Init(BUTTON_EXTI13_GPIO_Port, &GPIO_InitStruct);
+  /* Configure GPIO pin : BUTTON_EXTI13_Pin */
+  GPIO_InitStruct.Pin = BUTTON_EXTI13_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(BUTTON_EXTI13_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : DFSDM1_DATIN2_Pin DFSDM1_CKOUT_Pin */
   GPIO_InitStruct.Pin = DFSDM1_DATIN2_Pin | DFSDM1_CKOUT_Pin;
@@ -162,12 +158,10 @@ void MX_GPIO_Init(void) {
                         HTS221_DRDY_EXTI15_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pins : USB_OTG_FS_PWR_EN_Pin STSAFE_A100_RESET_Pin */
-  GPIO_InitStruct.Pin =
-      USB_OTG_FS_PWR_EN_Pin | STSAFE_A100_RESET_Pin | SPBTLE_RF_SPI3_CSN_Pin;
+  GPIO_InitStruct.Pin = USB_OTG_FS_PWR_EN_Pin | STSAFE_A100_RESET_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
