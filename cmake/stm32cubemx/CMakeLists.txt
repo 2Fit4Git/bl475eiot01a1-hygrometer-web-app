@@ -5,7 +5,7 @@ enable_language(C ASM)
 set(MX_Defines_Syms 
 	USE_HAL_DRIVER 
 	STM32L475xx
-    $<$<CONFIG:Debug>:DEBUG>
+    # $<$<CONFIG:Debug>:DEBUG>
 )
 
 # STM32CubeMX generated include paths
