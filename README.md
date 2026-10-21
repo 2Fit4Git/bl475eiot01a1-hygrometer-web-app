@@ -10,42 +10,15 @@ the page. The page refreshes its readings from `/api/readings`.
 
 ## Peripheral settings
 
-- **HTS221:** I2C; humidity averaging set to 512 samples and temperature
-  averaging set to 256 samples (maximum available averaging for lowest RMS
-  noise); continuous mode at 12.5 Hz (maximum ODR); block-data update enabled.
-- **ISM43362-M3G-L44:** use ST's B-L475E-IOT01A ES-WiFi BSP over the board's
-  SPI connection. The source uses the BSP's `wifi.h` API to configure a WPA2
-  access point on channel 6; it does not bit-bang SPI or configure the
-  module's board pins itself.
-- **HTTP:** single-client TCP server on port 80. The JSON response includes
-  temperature in Celsius and relative humidity in percent.
+- **HTS221:** I2C; humidity averaging set to 512 samples and temperature averaging set to 256 samples; continuous mode at 12.5 Hz; block-data update enabled.
+- **ISM43362-M3G-L44:** use ES-WiFi BSP over the board's SPI connection. The source uses the `wifi.h` API to configure a WPA2 access point.
+- **HTTP:** single-client TCP server on port 80. The JSON response includes temperature in Celsius and relative humidity in percent.
 
-## Add to an STM32CubeIDE project
+## Notes
 
-1. Create/open a CubeIDE project for the **B-L475E-IOT01A / STM32L475VGTx**.
-2. Configure the board's HTS221 I2C bus using the board schematic/BSP as the
-   reference. Set the project's `HTS221_I2C` macro to the generated I2C handle
-   (default in `peripherals/hts221/hts221.h` is `hi2c2`).
-3. Enable the board's ES-WiFi BSP with its **SPI** transport. Add the official
-   B-L475E-IOT01A Wi-Fi common sources (`wifi.c`, `es_wifi.c`, and
-   `es_wifi_io.c`) and their headers from the STM32CubeL4 package. Ensure
-   `es_wifi_io` is configured for the board's SPI transport and matching HAL
-   peripheral setup. The on-board radio is not a UART Wi-Fi device.
-4. Add the files under `peripherals/` and `application/` to the project and
-   add their directories to the compiler include paths.
-5. Change `WIFI_AP_PASSWORD` in `peripherals/ism43362/ism43362_wifi.h` to a
-   unique WPA2 password (at least 8 characters). The default is a placeholder;
-   do not commit a real password to a shared source repository.
-6. In the generated `main.c`, call `HygrometerApp_Init()` after HAL and
-   peripheral initialization, then repeatedly call `HygrometerApp_RunOnce()`.
-   The app prints the AP name with `printf`; configure a UART retarget if you
-   want to see it on the ST-LINK virtual COM port. Find the web server IP in
-   the connected client's Wi-Fi network details (the gateway/router address),
-   then browse to `http://<gateway-ip>/`. The AP password is the value of
-   `WIFI_AP_PASSWORD` in the header and is not printed.
-   A `printf` retarget is not needed for the web server itself. Because the
-   JSON endpoint formats floating-point values, enable the CubeIDE/newlib-nano
-   linker option `-u _printf_float` when building with newlib-nano.
+1. Change `WIFI_AP_PASSWORD` in `WiFi/Inc/ism43362_wifi.h` to a unique WPA2 password (at least 8 characters). The default is a placeholder; do not commit a real password to a shared source repository.
+2. In the generated `main.c`, call `HygrometerApp_Init()` after HAL and peripheral initialization, then repeatedly call `HygrometerApp_RunOnce()`. The app prints the AP name with `printf`, which is retargeted to USART1 (ST-Link virtual COM port, 115200 8N1). Find the web server IP in the connected client's Wi-Fi network details (the gateway/router address), then browse to `http://<gateway-ip>/`. The AP password is the value of `WIFI_AP_PASSWORD` in the header and is not printed.
+
 
 Example integration:
 
@@ -56,25 +29,40 @@ for (;;) {
 }
 ```
 
-Initialization failures are passed to the project's `Error_Handler()`. A
-temporary "sensor data not ready" response from the HTS221 is not treated as
-an I2C failure.
-
 ## Peripheral-oriented source layout
 
 ```text
 application/
-  hygrometer_app.c       Startup, sample scheduling, and IP reporting
+  hygrometer_app.c       Init sequence and the per-loop read/poll step
   hygrometer_app.h
-  web_server.c           HTTP routing, page, and JSON response
+  web_server.c           HTTP routing, HTML page, and JSON response
   web_server.h
-peripherals/
+Sensors/
   hts221/
     hts221.c             HTS221 register configuration and conversion
     hts221.h
-  ism43362/
-    ism43362_wifi.c      Access-point setup using the ES-WiFi API
-    ism43362_wifi.h
+WiFi/
+  Inc/
+    ism43362_wifi.h      AP SSID/password and ISM43362_StartAccessPoint()
+    wifi.h               Transport-agnostic Wi-Fi API used by the app
+    es_wifi.h            ES-WiFi status codes and ES_WIFI_* interface
+    es_wifi_conf.h       ES-WiFi options: SPI transport, buffer, timeouts
+    es_wifi_io.h         SPI transport hooks and module control macros
+  Src/
+    ism43362_wifi.c      Access-point bring-up on top of wifi.h
+    wifi.c               Thin wrapper that hides ES-WiFi behind wifi.h
+    es_wifi.c            ES-WiFi AT command implementation
+    es_wifi_io.c         SPI3 transport, reset/wake-up/DRDY handling
+Core/
+  Inc/                   CubeMX-generated HAL headers
+  Src/                   CubeMX-generated init and retarget sources
+                           main.c, gpio.c, i2c.c, usart.c, stm32l4xx_it.c,
+                           syscalls.c, sysmem.c, system_stm32l4xx.c
+Drivers/                 STM32L4 HAL driver and CMSIS
+cmake/
+  stm32cubemx/CMakeLists.txt  CubeMX-generated source list and include paths
+  gcc-arm-none-eabi.cmake     arm-none-eabi-gcc toolchain file
+  starm-clang.cmake           starm-clang toolchain file (picolibc)
 ```
 
 ## References
@@ -82,3 +70,4 @@ peripherals/
 - [STMicroelectronics STM32CubeL4 Wi-Fi HTTP server example](https://github.com/STMicroelectronics/STM32CubeL4/tree/master/Projects/B-L475E-IOT01A/Applications/WiFi/WiFi_HTTP_Server)
 - [HTS221 datasheet](https://www.st.com/resource/en/datasheet/hts221.pdf)
 - [eS-WiFi Module AT Command Set User Manual](https://www.inventeksys.com/iwin/wp-content/uploads/IWIN_Command_Set_Users_Manual.pdf)
+- [ISM43362-M3G-L44 Product Page](https://www.inventeksys.com/ism4336-m3g-l44-e-embedded-serial-to-wifi-module/)
