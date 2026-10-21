@@ -93,7 +93,6 @@ int main(void) {
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   (void)setvbuf(stdout, NULL, _IONBF, 0);
-  (void)printf("boot: USART1 ready\r\n");
   HygrometerApp_Init();
   /* USER CODE END 2 */
 
