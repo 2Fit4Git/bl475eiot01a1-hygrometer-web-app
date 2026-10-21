@@ -31,7 +31,7 @@
 #include "es_wifi_conf.h"
 
 /* Exported Constants --------------------------------------------------------*/
-#define ES_WIFI_PAYLOAD_SIZE     1200
+#define ES_WIFI_PAYLOAD_SIZE     1460
 
 typedef int8_t (*IO_Init_Func)(uint16_t);
 typedef int8_t (*IO_DeInit_Func)(void);

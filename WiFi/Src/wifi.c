@@ -447,14 +447,29 @@ WIFI_Status_t WIFI_StopServer(uint32_t socket)
 WIFI_Status_t WIFI_SendData(uint32_t socket, const uint8_t *pdata, uint16_t Reqlen, uint16_t *SentDatalen,
                             uint32_t Timeout)
 {
-  WIFI_Status_t ret = WIFI_STATUS_ERROR;
+  uint16_t total_sent = 0;
 
-    if (ES_WIFI_SendData(&EsWifiObj, (uint8_t)socket, pdata, Reqlen, SentDatalen, Timeout) == ES_WIFI_STATUS_OK)
-    {
-      ret = WIFI_STATUS_OK;
+  *SentDatalen = 0;
+
+  /* S3 carries at most ES_WIFI_PAYLOAD_SIZE bytes, so send in chunks */
+  while (total_sent < Reqlen) {
+    uint16_t chunk_len = (uint16_t)(Reqlen - total_sent);
+    uint16_t chunk_sent = 0;
+
+    if (chunk_len > ES_WIFI_PAYLOAD_SIZE) {
+      chunk_len = ES_WIFI_PAYLOAD_SIZE;
     }
+    if (ES_WIFI_SendData(&EsWifiObj, (uint8_t)socket, pdata + total_sent, chunk_len,
+                         &chunk_sent, Timeout) != ES_WIFI_STATUS_OK ||
+        chunk_sent == 0) {
+      break;
+    }
+    total_sent = (uint16_t)(total_sent + chunk_sent);
+  }
 
-  return ret;
+  *SentDatalen = total_sent;
+
+  return (total_sent == Reqlen) ? WIFI_STATUS_OK : WIFI_STATUS_ERROR;
 }
 
 /**
