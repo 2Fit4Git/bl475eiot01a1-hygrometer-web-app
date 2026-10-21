@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,6 +92,8 @@ int main(void) {
   MX_I2C2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  (void)setvbuf(stdout, NULL, _IONBF, 0);
+  (void)printf("boot: USART1 ready\r\n");
   HygrometerApp_Init();
   /* USER CODE END 2 */
 
@@ -152,12 +154,16 @@ void SystemClock_Config(void) {
 }
 
 /* USER CODE BEGIN 4 */
+/* Picolibc's stdout routes through __io_putchar, so _write alone is not enough */
+int __io_putchar(int ch) {
+  uint8_t byte = (uint8_t)ch;
+  HAL_UART_Transmit(&huart1, &byte, 1U, HAL_MAX_DELAY);
+  return ch;
+}
+
 int _write(int file, char *ptr, int len) {
   (void)file;
-
-  for (size_t i = 0; i < len; i++) {
-    HAL_UART_Transmit(&huart1, (uint8_t *)ptr++, 1, HAL_MAX_DELAY);
-  }
+  HAL_UART_Transmit(&huart1, (uint8_t *)ptr, (uint16_t)len, HAL_MAX_DELAY);
   return len;
 }
 /* USER CODE END 4 */
