@@ -77,12 +77,8 @@ peripherals/
     ism43362_wifi.h
 ```
 
-The STM32CubeL4 board Wi-Fi BSP and Cube-generated startup, clock, I2C, SPI,
-GPIO, and interrupt files are intentionally external dependencies. This is
-an application source package to integrate into that board project, rather
-than a standalone CubeIDE import/build project.
-
 ## References
 
 - [STMicroelectronics STM32CubeL4 Wi-Fi HTTP server example](https://github.com/STMicroelectronics/STM32CubeL4/tree/master/Projects/B-L475E-IOT01A/Applications/WiFi/WiFi_HTTP_Server)
 - [HTS221 datasheet](https://www.st.com/resource/en/datasheet/hts221.pdf)
+- [eS-WiFi Module AT Command Set User Manual](https://www.inventeksys.com/iwin/wp-content/uploads/IWIN_Command_Set_Users_Manual.pdf)
