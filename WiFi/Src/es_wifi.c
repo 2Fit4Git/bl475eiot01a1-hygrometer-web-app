@@ -1298,7 +1298,7 @@ ES_WIFI_Status_t ES_WIFI_ActivateAP(ES_WIFIObject_t *Obj, const ES_WIFI_APConfig
             ret = AT_ExecuteCommand(Obj, Obj->CmdData, Obj->CmdData);
             if(ret == ES_WIFI_STATUS_OK)
             {
-              char * join_line = strstr((char *)Obj->CmdData, "[JOIN   ]");
+               char * join_line = strstr((char *)Obj->CmdData, "[JOIN   ]");
               if( join_line == NULL)
               {
                 ret = ES_WIFI_STATUS_ERROR;

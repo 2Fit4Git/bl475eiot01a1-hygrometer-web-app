@@ -169,7 +169,7 @@ int8_t SPI_WIFI_Init(uint16_t mode) {
     hspi.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-    hspi.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+    hspi.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
 
     if (HAL_SPI_Init(&hspi) != HAL_OK) {
       return -1;
